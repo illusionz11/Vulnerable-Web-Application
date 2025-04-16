@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+
+{% block title %}
+File Upload
+{% endblock %}
+
+{% block content %}
+
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .content {
+    margin-top: 25px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 20px;
+  }
+
+  .textbox {
+    background-color: #1a1a1a;
+    padding: 30px;
+    border: 2px solid #1f3b4d; /* Slight blue tint to set it apart */
+    border-radius: 12px;
+    width: 600px;
+    margin: 40px auto;
+    box-shadow: 0 0 8px rgba(0, 191, 255, 0.1);
+  }
+
+  .textbox h1,
+  .textbox h5 {
+    text-align: center;
+    color: #00bfff; /* DeepSkyBlue instead of red */
+    margin-top: 10px;
+  }
+
+  .textbox p,
+  .textbox li,
+  .textbox ol {
+    font-size: 17px;
+    color: #e0e0e0;
+    line-height: 1.6;
+  }
+
+  .textbox ul,
+  .textbox ol {
+    padding-left: 25px;
+  }
+
+  .textbox input[type="file"],
+  .textbox input[type="submit"] {
+    display: block;
+    margin-top: 20px;
+    padding: 12px;
+    font-size: 16px;
+    background-color: #2c2c2c;
+    color: #f0f0f0;
+    border: 1px solid #555;
+    border-radius: 6px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .textbox input[type="submit"] {
+    background-color: #007acc;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+
+  .textbox input[type="submit"]:hover {
+    background-color: #005f99;
+  }
+
+  code {
+    background-color: #2c2c2c;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #ffffff;
+  }
+
+  .text-center.mt-4 {
+    text-align: center;
+    margin-top: 40px;
+  }
+
+  .textbox .success-message {
+    color: #7CFC00;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+  }
+  text-center mt-4{
+       padding: 10px;
+    }
+</style>
+
+
+ 
+<div class="content">
+  <h5>
+    What is File Upload?
+  </h5>
+  <p>
+    A type of security vulnerability that affects web applications. By allowing an attacker to manipulate the url path of a web application to manouver
+    throughout the filesystem freely. Sometimes labeled as Path Traversal.
+  </p>
+  <br>
+  <p>
+    File upload vulnerabilities occur when a web server inadequently validates uploaded files, allowing attackers to bypass restrictions, this can allow the 
+    upload of malicious files, including server-side scripts that facilitate remote code execution. In some cases the upload alone is harmful, while 
+    others require a follow-up request to execute the file.
+  </p>
+  <br>
+
+  <h5>
+    Impact of file upload vulnerabilities:
+  </h5>
+  <ul>
+    <li>
+      The impact of file upload vulnerabilities depends on which aspects are improperly validated 
+      (e.g., size, type, contents) and the restrictions imposed post-upload.
+    </li>
+    <li>
+      If file type validation is weak and the server executes certain files (e.g., .php, .jsp), 
+      an attacker could upload a web shell, gaining full server control.
+    </li>
+    <li>
+      Improper filename validation may allow overwriting critical files, and with directory traversal vulnerabilities, 
+      attackers could place files in unintended locations.
+    </li>
+    <li>
+      Unrestricted file size could lead to a denial-of-service (DoS) attack by consuming all available disk space.
+    </li>
+  </ul>
+  <br>
+
+  <h5>
+    How file upload vulnerabilities arise:
+  </h5>
+  <ul>
+    <li>
+      File upload vulnerabilities typically arise from flawed or bypassable validation rather than a complete lack of restrictions.
+    </li>
+    <li>
+      Developers may attempt to blacklist dangerous file types but fail to account for parsing inconsistencies or obscure yet risky extensions.
+    </li>
+    <li>
+      Some websites check file types using properties that attackers can easily manipulate with tools like Burp Proxy.
+    </li>
+    <li>
+      Even strong validation may be inconsistently enforced across different hosts and directories, creating exploitable gaps in security.
+    </li>
+  </ul>
+  <br>
+
+  <h5>
+    How do files are handled by the web server:
+  </h5>
+  <p>
+    Traditionally, web servers mapped request paths directly to filesystem directories. 
+    While modern websites are more dynamic, servers still process static files like images and stylesheets.
+  </p>
+  <p>
+    When handling a request, the server checks the file extension against preconfigured MIME type mappings:
+  </p>
+  <ul>
+    <li>
+      Non-executable files (e.g., images, HTML) are sent as-is in an HTTP response.
+    </li>
+    <li>
+      Executable files (e.g., PHP) are processed if the server is configured to execute them, generating a response.
+    </li>
+    <li>
+      Misconfigured executable files may either trigger an error or expose source code if served as plain text.
+    </li>
+  </ul>
+  <br>
+
+  <div class="content">
+    <h5>Level 1: Remote Code Execution via Unrestricted Python File Upload</h5>
+    <p>
+      This upload form allows users to upload files with <b>no checks or sanitisation</b>. There are no restrictions on file types, extensions, MIME types, or filenames. 
+      Because of this, an attacker can upload a malicious Python script which is then executed by the server — giving full remote code execution (RCE).
+    </p>
+  
+    <h5>How to Exploit This Vulnerability</h5>
+    <ol>
+      <li>
+        Ensure that you have a Python script named <code>shell.py</code> prepared in your <code>Downloads</code> folder. The contents of the file should be:
+        <br>
+      </li>
+      <li>
+        Click the <b>Choose File</b> button and select <code>shell.py</code>
+      </li>
+      <li>
+        Click the <b>Upload</b> button. If successful, you’ll see the message:
+        <br>
+        <code>File uploaded: shell.py</code>
+      </li>
+      <li>
+        The file is now saved to the server at: <br>
+        <code>/static/uploads/shell.py</code>
+      </li>
+      <li>
+        If the server is misconfigured to <b>execute</b> `.py` files within the uploads directory (such as through a dev route or unsafe subprocess call), access it through:
+        <br>
+      </li>
+      <li>
+        If executed, the contents of <code>/etc/passwd</code> will be printed or returned in the response — confirming RCE.
+      </li>
+    </ol>
+
+    
+    <pre tabindex="0" class="code bg-secondary text-light"><code>
+  #!/usr/bin/python3
+
+  import os
+  
+  print("Content-Type: text/plain\n")  # Necessary for CGI execution
+  print("Reading /etc/passwd...\n")
+  
+  # Execute command and print output
+  output = os.popen("cat /etc/passwd").read()
+  print(output)  
+  
+</code></pre>
+</div>
+  
+    <h5>Why This Works</h5>
+    <ul>
+      <li>
+        No file extension or MIME validation — any script can be uploaded.
+      </li>
+      <li>
+        The server uses the original filename without sanitising it or changing the extension.
+      </li>
+      <li>
+        Uploaded scripts are saved in a web-accessible and executable location.
+      </li>
+      <li>
+        Server configuration or logic (e.g., auto-imports, subprocesses, or dev tools) allows execution of uploaded `.py` scripts.
+      </li>
+    </ul>
+    <p>
+      This vulnerability is extremely dangerous in real-world scenarios. In later levels, we will explore how validation can be added to defend against this kind of attack.
+    </p>
+  </div>
+
+  <div class="textbox">
+    <title>Upload new file </title>
+    <h1>Upload a file you want to save</h1>
+    <form action='/file-upload1' method="post" enctype="multipart/form-data">
+      <input type="file" name="file">
+      <input type="submit" value="Upload">
+    </form>
+    <br>
+    {% if file_uploaded %}
+      <p class="success-message">{{ file_uploaded }}</p>
+    {% endif %}
+  </div>
+
+    <div class="text-center mt-4">
+      <a href="/file-upload2" class="btn btn-primary">Next Page</a> 
+    </div>
+    <br>
+</div>
+
+{% endblock %}  

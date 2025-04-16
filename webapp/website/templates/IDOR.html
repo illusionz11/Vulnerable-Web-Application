@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}
+IDOR Vulnerability
+{% endblock %}
+
+{% block content %}
+
+<style>
+    body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .content {
+    margin-top: 25px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    }
+    text-center mt-4{
+       padding: 10px;
+    }
+</style>
+
+<div class="content">
+    <h5>
+        What is IDOR?
+    </h5>
+    <p>
+        IDOR stands for (Insecure Direct Object Reference). 
+        It is a type of security vulnerability that occurs when an application provides direct access to objects based on user-supplied input, without proper authorisation checks. 
+        This allows attackers to access or modify data they are not supposed to have access to by manipulating the input.
+    </p>
+    <br>
+    <h5>
+        How Does IDOR Work?
+    </h5>
+    <ul>
+        <li>
+            Direct Access: The application uses identifiers (such as user IDs, file names, or database keys) provided by the user to directly access objects.
+        </li>
+        <br>
+        <li>
+            Lack of Authorisation Checks: The application does not properly verify if the user has permission to access the object.
+        </li>
+        <br>
+        <li>
+            Manipulated Input: An attacker changes the identifier in their request to access a different object.
+        </li>
+        <br>
+        <li>
+            Unauthorised Access: The application retrieves or modifies the object based on the manipulated identifier, allowing unauthorised access.
+        </li>
+    </ul>
+</div>
+
+<div class="content">
+<h5>
+    Dangers of IDOR Vulnerability
+</h5>
+<ul>
+    <li>
+        Data Breach: Attackers can access sensitive information, leading to privacy violations.
+    </li>
+    <br>
+    <li>
+        Data Manipulation: Attackers can modify or delete data they do not own.
+    </li>
+    <br>
+    <li>
+        Unauthorised Actions: Attackers can perform actions on behalf of other users, 
+        such as approving transactions or modifying settings.
+    </li>
+    <br>
+</ul>
+<p> In this example today you will manually test for an IDOR vulnerability by manipulating the parameters of the URL on the notes
+    page, (then underneath a picture of the notes page)
+</p>
+<p>
+    For this to work you will have to make sure there are atleast 2 notes within the database saved, one note owned by one account and one note
+    belonging to another account this may be already done, but if not dont worry just create 2 seperate accounts using the signup page and create 1
+    or more notes on each. (maybe add signup page pic)
+</p>
+<p>
+    Now after that is confirmed and the parameters are set navigate to the notes page. now the note displayed will correspond to one
+    of the notes your current user account has created. from there you may notice the url looks a little bit like how we explained
+    earlier that an example of the IDOR vulnerability (pic of note page)
+</p>
+<p>
+    Now on this page you can clearly see that the note details are displayed with the id of your note, content, date and User ID that
+    corresponds to the user who created that note.
+</p>
+<p>
+    From here you are going to select the url bar at the top and change the example: /view-note/1 to /view-note/2 or similar then hit enter
+    and it should display a different note that corresponds to note ID 2 and if done corrrectly that note should have a different User ID
+    maybe of 2 or 3 etc. This means that as User ID: 1 you are now seeing a note created by User ID:2 without any validation and no barriers
+    blocking your user from reading their sensitive information stored in their account. (pic of User ID:2 note)
+</p>
+<p>
+    As you may notice in a real-world application this type of vulnearbility is highly sensitive and can be catastrophic if used in specific
+    ways. 
+</p>
+
+
+<div class="content">
+    <h5>Level 1: Unauthorised Note Access (No User Check)</h5>
+    <p>
+      In this level, the application directly retrieves a note from the database using the <code>note_id</code> from the URL, but does <b>not</b> check whether the current user owns that note.
+    </p>
+    <ul>
+      <li>Anyone can access <code>/view-note/1</code>, <code>/view-note/2</code>, etc., regardless of who created the note.</li>
+      <li>This allows users to read (and potentially modify) notes belonging to other accounts.</li>
+    </ul>
+  
+    <p><b>Exploitation Steps:</b></p>
+    <ol>
+      <li>Log in to any user account.</li>
+      <li>Create a note using the notes interface.</li>
+      <li>Visit <code>/view-note/1</code> (or another ID that doesn't belong to you).</li>
+      <li>If successful, you will see someone else’s note content.</li>
+    </ol>
+  
+    <p><b>Route:</b> <code>/view-note/&lt;int:note_id&gt;</code> — no ownership check.</p>
+  </div>
+  
+
+  <div class="content">
+    <h5>Level 2: Login Required, But Ownership Check Is Misleading</h5>
+  <p>
+  This level adds a login requirement using <code>@login_required</code>, but implements a flawed or misleading ownership check.
+  Instead of verifying whether the note belongs to the currently logged-in user, the code checks a condition that always passes.
+  </p>
+  <ul>
+    <li>Users must be logged in — so anonymous access is blocked.</li>
+    <li>However, any authenticated user can access other users’ notes due to weak validation logic.</li>
+  </ul>
+
+  <p><b>Exploitation Steps:</b></p>
+  <ol>
+    <li>Create two accounts (e.g., user A and user B).</li>
+    <li>Log in as user A and try visiting <code>/view-note2/2</code>.</li>
+    <li>If note 2 belongs to user B, it will still be accessible due to the flawed check.</li>
+  </ol>
+
+  <p><b>Route:</b> <code>/view-note2/&lt;int:note_id&gt;</code> — login is enforced, but access control logic is broken.</p>
+  </div>
+  
+
+  <div class="content">
+    <h5>Level 3: Partial Ownership Check (Bypassable)</h5>
+  <p>
+  This level introduces a conditional check that allows access to a note if either:
+  </p>
+  <ul>
+    <li>The note belongs to the current user, <strong>or</strong></li>
+    <li>The <code>note_id</code> is an <strong>odd number</strong> (e.g., 1, 3, 5...)</li>
+  </ul>
+  <p>
+  This is a deliberately flawed and inconsistent ownership check. An attacker can still access unauthorized notes just by guessing odd-numbered IDs, even if they do not own them.
+  </p>
+
+  <p><b>Exploitation Steps:</b></p>
+  <ol>
+     <li>Log in as user A and create a note (note its ID, e.g., 2).</li>
+     <li>Log in as user B and try accessing <code>/view-note3/2</code> — it will be denied.</li>
+     <li>Then try <code>/view-note3/1</code> or <code>/view-note3/3</code> — if those notes exist and are odd-numbered, you will be able to access them regardless of ownership.</li>
+  </ol>
+
+  <p><b>Route:</b> <code>/view-note3/&lt;int:note_id&gt;</code> — contains partial access control, but it's flawed and easily bypassed.</p>
+  </div>
+  
+
+  <div class="content">
+    <h5>How to Identify IDOR Vulnerabilities</h5>
+    <p>
+      IDORs are often discovered during manual testing of web applications. You can identify them by:
+    </p>
+    <ul>
+      <li>Looking for URLs that contain numeric IDs (e.g., <code>/view/123</code>, <code>/download?file=invoice7.pdf</code>)</li>
+      <li>Changing these IDs to guess other valid resources (e.g., <code>/view/124</code>)</li>
+      <li>Noticing if other users' data appears — this suggests missing ownership validation</li>
+      <li>Testing both GET and POST requests (IDORs can exist on forms, actions, and APIs too)</li>
+    </ul>
+  </div>
+
+<div class="text-center mt-4">
+    <a href="/SQL" class="btn btn-primary">Next vulnerability</a>
+  </div>
+  <br>
+{% endblock %}

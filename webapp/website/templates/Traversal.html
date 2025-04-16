@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}
+Directory Traversal
+{% endblock %}
+
+{% block content %}
+
+<style>
+  .textbox{
+   padding: 15px;
+  }
+  .btn {
+   margin: 10px;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .content {
+    margin-top: 10px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 10px;
+  }
+  text-center mt-4{
+       padding: 10px;
+    }
+ </style>
+ 
+<div class="content">
+  <h5>
+    What is Directory Traversal?
+  </h5>
+  <p>
+    A type of security vulnerability that affects web applications. By allowing an attacker to manipulate the url path of a web application to manouver
+    throughout the filesystem freely. Sometimes labeled as Path Traversal.
+  </p>
+</div>
+<div class="content">
+  <h5>
+    What is Directory traversal
+  </h5>
+  <p>
+    Directory traversal allows an attacker to read arbitrary files within the filesystem of the server hosting the application. Some of the files may be e.g.
+  </p>
+  <ul>
+    <li> Application code and data </li>
+    <li> Credentials of backend systems </li>
+    <li> highly sensitive operation files </li>
+  </ul>
+  <h5> How does Directory Traversal work? </h5>
+
+  <p>
+    Attackers can manipulate file paths or input parameters within the applications URL to navigate the inner file system of the hosting server.
+  </p>
+  <p>
+    This then allows the attackers to access restricted directories, execute commands on the hosting server and view data outside of the web application folder
+     all of these a normal end user would never be able to interact with.
+  </p>
+
+  <h5>How dangerous is Directory Traversal vulnerabilities</h5>
+  <p>
+    Directory Traversal vulnerabilities can be highly dangerous because they allow attackers to access arbitrary files on the server, potentially exposing
+    sensitive data, configuration files, or source code.
+  </p>
+
+  <div class="content">
+    <h5>How Do Directory Traversal Attacks Work?</h5>
+    <p>
+      Web applications often serve files from a specific folder, such as user uploads or static resources. If a user is allowed to specify the file path (e.g. through a URL parameter), and that input isn't properly sanitised, attackers can manipulate the path using special characters like <code>../</code> to navigate "up" the folder structure and access files outside the intended directory.
+    </p>
+    <p>
+      For example, if an application expects <code>?file=report.txt</code> to read <code>/var/www/uploads/report.txt</code>, an attacker might instead supply <code>?file=../../etc/passwd</code>, which would attempt to read the system file <code>/etc/passwd</code> — a common first target for confirming a successful attack.
+    </p>
+    <p>
+      These attacks are also known as <strong>Path Traversal</strong>, and they rely on improperly validated user input combined with insecure file access logic on the server.
+    </p>
+  </div><div class="content">
+    <h5>How Do Directory Traversal Attacks Work?</h5>
+    <p>
+      Web applications often serve files from a specific folder, such as user uploads or static resources. If a user is allowed to specify the file path (e.g. through a URL parameter), and that input isn't properly sanitised, attackers can manipulate the path using special characters like <code>../</code> to navigate "up" the folder structure and access files outside the intended directory.
+    </p>
+    <p>
+      For example, if an application expects <code>?file=report.txt</code> to read <code>/var/www/uploads/report.txt</code>, an attacker might instead supply <code>?file=../../etc/passwd</code>, which would attempt to read the system file <code>/etc/passwd</code> — a common first target for confirming a successful attack.
+    </p>
+    <p>
+      These attacks are also known as <strong>Path Traversal</strong>, and they rely on improperly validated user input combined with insecure file access logic on the server.
+    </p>
+  </div>
+
+  <div class="content">
+    <h5>Why Are Directory Traversal Attacks Dangerous?</h5>
+    <p>
+      Directory traversal vulnerabilities can allow attackers to access files that were never meant to be exposed through the web application. These may include:
+    </p>
+    <ul>
+      <li><b>System files</b> such as <code>/etc/passwd</code> on Linux, which lists user accounts</li>
+      <li><b>Source code</b> of the web application (e.g., <code>app.py</code>, <code>config.py</code>, or environment files)</li>
+      <li><b>Credential files</b> containing database or API secrets</li>
+      <li><b>Log files</b> that may reveal sensitive data or internal server structure</li>
+    </ul>
+    <p>
+      In more severe cases, if the attacker can write to the file system (via an upload feature, for example), they may use traversal to reach sensitive directories and execute arbitrary code.
+    </p>
+  </div>
+  
+  <div class="content">
+    <h5>What Can an Attacker Do With This Access?</h5>
+    <p>
+      Once a file is accessed through traversal, the attacker may:
+    </p>
+    <ul>
+      <li>Enumerate valid users and system configuration</li>
+      <li>Steal secrets like database passwords or AWS keys</li>
+      <li>Reverse-engineer the application's logic from source code</li>
+      <li>Chain the vulnerability with others (e.g., LFI or RCE) to gain shell access</li>
+    </ul>
+    <p>
+      Directory traversal is often the <strong>first step in a larger attack chain</strong>, making it a high-severity issue even on its own.
+    </p>
+  </div>
+  
+  <div class="content">
+    <h5>How to Identify Directory Traversal Vulnerabilities</h5>
+    <p>
+      To test for directory traversal, a security researcher or penetration tester may:
+    </p>
+    <ul>
+      <li>Look for URL parameters like <code>?file=</code> or <code>?path=</code> that appear to fetch or read files</li>
+      <li>Try inserting <code>../</code> patterns to see if the application allows access to files outside the expected folder</li>
+      <li>Use URL encoding tricks like <code>%2e%2e%2f</code> (../) or double-encoded payloads like <code>%252e%252e%252f</code> to bypass filters</li>
+      <li>Attempt to access common test files like <code>/etc/passwd</code> (Linux) or <code>boot.ini</code> (Windows)</li>
+    </ul>
+    <p>
+      Vulnerability scanners and manual testing are both effective for detecting directory traversal issues. However, these issues are often missed if sanitisation is partially implemented but not robust.
+    </p>
+  </div>
+
+  <div class="content">
+    <h5>Directory Traversal Vulnerabilities Overview</h5>
+    <p>
+      Directory Traversal is a type of security vulnerability that allows an attacker to access files or directories that are outside the intended file system scope of the web application. Below are three levels of this vulnerability demonstrated through increasingly hardened Flask routes, each with different levels of input validation and sanitisation.
+    </p>
+    <p>
+      To begin, read the information below, then navigate here:
+      <br>
+      <a href="http://127.0.0.1:5000/view-upload1?file=1mg.jpeg" style="color: #00bfff;">View Uploaded File</a>
+    </p>
+    
+  </div>
+  
+  <!-- LEVEL 1 -->
+  <div class="content">
+    <h5>Level 1: Basic Path Traversal (No Sanitisation)</h5>
+    <p>
+      This level represents the most vulnerable scenario. The application directly accepts a file name from the URL parameter and joins it to the uploads folder path without any sanitisation or decoding checks.
+    </p>
+    <ul>
+      <li>The file name is taken directly from <code>?file=</code> in the URL.</li>
+      <li>No sanitisation or validation is applied to the input.</li>
+      <li>Allows direct use of traversal patterns like <code>../</code>.</li>
+    </ul>
+  
+    <p><b>Exploitation Example:</b></p>
+    <ol>
+      <li>Visit: <code>/view-upload1?file=/etc/passwd</code></li>
+      <li>The application will read and return the contents of <code>/etc/passwd</code>.</li>
+    </ol>
+  
+    <p><b>Mitigation (not applied in this level):</b> Sanitise file input, resolve real paths, and restrict access to within a known safe directory.</p>
+  </div>
+  
+  <!-- LEVEL 2 -->
+  <div class="content">
+    <h5>Level 2: Input Decoding and Minimal Sanitisation</h5>
+    <p>
+      In this level, the application decodes any URL-encoded characters (e.g. <code>%2F</code> becomes <code>/</code>) and removes any instances of <code>../</code>. However, this is still bypassable through <b>encoded traversal</b> not covered by this sanitisation.
+    </p>
+    <ul>
+      <li>The input is decoded once using <code>unquote()</code>.</li>
+      <li>Instances of <code>../</code> are removed.</li>
+      <li>However, encoded versions like <code>%2e%2e%2f</code> are not blocked.</li>
+    </ul>
+  
+    <p><b>Exploitation Example:</b></p>
+    <ol>
+      <li>Visit: <code>/view-upload2?file=%2Fetc%2Fpasswd</code></li>
+      <li>Once decoded, this becomes <code>/etc/passwd</code> and successfully bypasses the basic sanitisation.</li>
+    </ol>
+  
+    <p><b>Mitigation (partially applied):</b> This level attempts basic sanitisation but lacks thorough normalisation or recursive decoding protection.</p>
+    <br>
+    <a href="http://127.0.0.1:5000/view-upload2?file=1mg.jpeg" style="color: #00bfff;">View Uploaded File</a>
+  </div>
+  
+  <!-- LEVEL 3 -->
+  <div class="content">
+    <h5>Level 3: Double Decoding with Basic Filtering</h5>
+    <p>
+      This level attempts to decode user input twice to handle nested encoding attacks. It then removes any <code>../</code> sequences. However, because the check is still only string-based, it can be bypassed using double-encoded payloads that reintroduce traversal characters after decoding.
+    </p>
+    <ul>
+      <li>Input is decoded twice using <code>unquote()</code>.</li>
+      <li>Only <code>../</code> strings are stripped — other traversal methods may still succeed.</li>
+      <li>Relies on string replacement instead of real path validation.</li>
+    </ul>
+  
+    <p><b>Exploitation Example:</b></p>
+    <ol>
+      <li>Visit: <code>/view-upload3?file=%252fetc%252fpasswd</code></li>
+      <li>The input is decoded twice into <code>/etc/passwd</code>, and the application still opens the file.</li>
+    </ol>
+  
+    <p><b>Mitigation (partial):</b> Decoding is improved, but sanitisation is still ineffective without real path checks.</p>
+    <br>
+      <a href="http://127.0.0.1:5000/view-upload3?file=1mg.jpeg" style="color: #00bfff;">View Uploaded File</a>
+  </div>
+  <br>
+
+</div>
+<div class="text-center mt-4">
+    <a href="/IDOR" class="btn btn-primary">Next vulnerability</a>
+  </div>
+  <br>
+{% endblock %}

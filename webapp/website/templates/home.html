@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}
+Home
+{% endblock %}
+
+{% block content %}
+
+<style>
+  h5 {
+    margin-top: 25px;
+    text-align: center;
+  }
+  .disclaimer {
+    font-size: 0.75em;
+    color: #555;
+    margin-top: 30px;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+  }
+</style>
+
+<h5>Before Getting Started</h5>
+
+<p>
+  Now getting started is easy! Simply head over to the sign-up page and create your account in just a few clicks. We’ve streamlined the process to ensure 
+  you can start your learning journey without any hassle. Once registered, you’ll gain full access to all the features of our platform.
+</p>
+<p>
+  Your privacy and data security are our top priorities. We adhere to strict security practices to ensure that your information is protected. Rest assured, 
+  all data shared with us will be kept confidential and used solely for enhancing your learning experience.
+</p>
+
+<div style="text-align: center; margin-top: 20px;">
+  <a href="/sign-up" class="btn btn-primary">Sign Up Now</a>
+</div>
+
+<div class="disclaimer">
+  <p><strong>Disclaimer:</strong> This platform is provided solely for educational purposes within a self-contained environment. To ensure compliance with 
+  GDPR and other UK data protection laws, no personal details are required or collected. Please do not attempt to use personal data as part of your learning experience.</p>
+  <p>The skills and tools presented in this experience are intended for controlled educational use only. Any use of these skills or tools against real-world 
+  applications or systems may be in violation of the UK Computer Misuse Act (CMA) and other global cybersecurity laws. We assume no liability for any misuse 
+  or actions taken beyond this isolated environment.</p>
+</div>
+
+{% endblock %}

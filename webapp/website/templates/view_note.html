@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}
+View Note
+{% endblock %}
+
+{% block content %}
+<style>
+    .note{
+        margin-top: 15px;
+    }
+</style>
+<div class="note">
+<h1>Note Details</h1>
+<p><strong>ID:</strong> {{ note.id }}</p>
+<p><strong>Content:</strong> {{ note.data }}</p>
+<p><strong>Date:</strong> {{ note.date }}</p>
+<p><strong>User ID:</strong> {{ note.user_id }}</p>
+</div>
+{% endblock %}

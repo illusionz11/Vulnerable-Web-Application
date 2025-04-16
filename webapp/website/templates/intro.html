@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}
+Home
+{% endblock %}
+
+{% block content %}
+
+<style>
+  h5{
+    margin-top: 25px;
+    text-align: center;
+  }
+</style>
+
+<h5>Mastering the Basics of Web Testing</h5>
+
+<p>
+  In today's digital landscape, web security is more critical than ever. Web applications are the backbone of modern businesses, but they are also prime 
+  targets for cyberattacks. This web application is designed to provide users with a hands-on experience, exploring the most common vulnerabilities that 
+  threaten web applications worldwide. By understanding these vulnerabilities, you'll gain insights into how attackers exploit weaknesses and, more 
+  importantly, how to defend against them.
+</p>
+
+<p>
+  Our platform focuses on five of the most prevalent vulnerabilities from the OWASP Top 10, a trusted standard for web application security. Each module 
+  is carefully crafted to not only expose you to real-world scenarios but also to guide you through the process of identifying, exploiting, and mitigating 
+  these risks.
+</p>
+<p>
+  The Open Web Application Security Project (OWASP) Top 10 is an industry-standard list of the most critical security risks to web applications. 
+  Our training focuses on five key vulnerabilities, including:
+</p>
+<ul>
+  <li><strong>SQL Injection:</strong> Learn how SQL injection can compromise data integrity by exploiting vulnerabilities in your database queries.</li>
+  <li><strong>Cross-Site Scripting (XSS):</strong> Understand how attackers inject malicious scripts into web pages viewed by other users.</li>
+  <li><strong>Insecure Direct Object References (IDOR):</strong> Discover how insufficient access controls can expose sensitive information.</li>
+  <li><strong>Unrestricted File Upload:</strong> Explore the risks associated with allowing uncontrolled file uploads, which can lead to unauthorized access and execution of malicious code.</li>
+  <li><strong>Directory Traversal:</strong> Learn how attackers manipulate file paths to access files outside the designated directories on the server.</li>
+</ul>
+<p>
+  Throughout these modules, you'll use industry-standard tools and techniques to identify and mitigate these vulnerabilities, 
+  preparing you to apply these skills in real-world scenarios.
+</p>
+<p>
+  No prior experience in web security? No problem. This course is designed for beginners and seasoned professionals alike. If you're new to the field, 
+  we recommend starting with our introductory modules, which will provide the foundational knowledge needed to tackle more advanced topics.
+</p>
+<p>
+  Your privacy and data security are our top priorities. We adhere to strict security practices to ensure that your information is unused.
+</p>
+
+<div style="text-align: center; margin-top: 20px;">
+  <a href="/XSS-1" class="btn btn-primary">Get Started</a>
+</div>
+
+{% endblock %}

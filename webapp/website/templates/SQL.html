@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}
+SQL Injection Vulnerability
+{% endblock %}
+
+{% block content %}
+
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+    .content {
+    margin-top: 25px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    }
+    text-center mt-4{
+       padding: 10px;
+    }
+</style>
+
+<div class="content">
+    <h5>
+        What is SQL Injection?
+    </h5>
+    <p>
+        SQL Injection (SQLi) is a type of security vulnerability in web applications where an attacker can manipulate the SQL queries that the application sends to its database. 
+        This allows the attacker to interfere with the application's database queries, potentially leading to unauthorised data access, data modification, or even complete database compromise.
+    </p>
+    <br>
+    <h5>
+        How Does SQL Injection Work?
+    </h5>
+    <ul>
+        <li>
+            User Input: Web applications often accept user input to interact with the database, such as login forms, search boxes, or URL parameters.
+        </li>
+        <li>
+            Manipulated Input: An attacker provides specially crafted input that includes SQL code.
+        </li>
+        <li>
+            Unsanitised Input: If the application fails to properly sanitise and validate this input, the malicious SQL code gets executed as part of the database query.
+        </li>
+        <li>
+            Execution: The database executes the manipulated query, which can lead to unintended actions such as data leakage, data modification, or even full control of the database.
+        </li>
+    </ul>
+    <br>
+    <h5>
+        Types of SQL Injection
+    </h5>
+    <ul>
+        <li>Classic SQL Injection:
+            Directly manipulating SQL queries by injecting malicious input.</li>
+        <li>Blind SQL Injection:
+            The attacker receives no direct feedback about the structure of the query,
+            but can infer information based on the application's behavior.</li>
+        <li>Error-Based SQL Injection:
+            The attacker can cause SQL errors that reveal details about the database structure.</li>
+        <li>Union-Based SQL Injection:
+            Using the UNION SQL operator to combine the results of two or more queries into a single result,
+            thus retrieving data from different tables.</li>
+        <li>Second Order SQL Injection:
+            Malicious input is stored in the database and executed as part of another query at a later time.</li>
+    </ul>
+    <br>
+    <p>
+        Now for this vulnerability we are going to be utilising the insecure login Pages as we will be using SQL injection to gain access
+        to a user account without using the password. prerequisites - Verified Account. This can be done by either creating an
+        account or verifying a user already exists within the SQL database
+    </p>
+    <p>
+        From there navigate to the logout page and then to the login_insecure pages.
+    </p>
+        <h5>Why Is SQL Injection Dangerous?</h5>
+        <ul>
+          <li>Bypasses authentication checks to gain unauthorised access</li>
+          <li>Allows attackers to read, write, delete, or modify data</li>
+          <li>Enables complete database takeover in advanced scenarios</li>
+          <li>May lead to server-side file writes, OS-level command execution, or pivoting into internal networks</li>
+        </ul>
+      
+        <h5>How Attackers Exploit SQL Injection</h5>
+        <p>Attackers typically exploit SQLi by injecting payloads into input fields such as login forms or search bars. These payloads modify the SQL query sent to the database.</p>
+        <p>For example, in a vulnerable login form:</p>
+        <pre><code>
+        Input:
+          Username: admin' --
+          Password: anything
+      
+        Resulting Query:
+          SELECT * FROM User WHERE username = 'admin' --' AND password = 'anything'
+        </code></pre>
+        <p>The <code>--</code> comments out the rest of the query, bypassing the password check.</p>
+</div>
+      <!-- LEVEL 1 -->
+      <div class="content">
+        <h5>Level 1: SQLi via Wildcard Matching (LIKE Wildcard Injection)</h5>
+        <p>
+          In this login form, the username and password inputs are injected directly into a SQL query using <code>LIKE</code> instead of <code>=</code>, which makes matching easier and allows attackers to use <code>%</code> wildcards.
+        </p>
+        <p><b>Example Exploit:</b></p>
+        <ol>
+          <li>Go to <code>/login_insecure</code></li>
+          <li>Enter the following credentials:<br>
+            Username: <code>%</code><br>
+            Password: <code>%</code>
+          </li>
+          <li>This will match any record in the User table and log you in as the first user.</li>
+        </ol>
+        <p><b>Why It's Vulnerable:</b> No input sanitisation, and the use of <code>LIKE</code> makes exploitation even easier.</p>
+      </div>
+      
+      <!-- LEVEL 2 -->
+      <div class="content">
+        <h5>Level 2: Classic SQLi with Exact Match Injection</h5>
+        <p>
+          This version uses <code>=</code> instead of <code>LIKE</code>, which means you need a more targeted injection. However, it still directly injects user input into the SQL query with no sanitisation.
+        </p>
+        <p><b>Example Exploit:</b></p>
+        <ol>
+          <li>Go to <code>/login_insecure2</code></li>
+          <li>Enter the following credentials:<br>
+            Username: <code>admin' --</code><br>
+            Password: <code>anything</code>
+          </li>
+          <li>The query becomes:<br>
+            <code>SELECT * FROM User WHERE username = 'admin' --' AND password = 'anything'</code><br>
+            The password check is commented out, allowing login.
+          </li>
+        </ol>
+        <p><b>Why It's Vulnerable:</b> The input is still unsanitised, allowing classic inline comment-style injection.</p>
+      </div>
+      
+      <!-- LEVEL 3 -->
+      <div class="content">
+        <h5>Level 3: Superficial Filtering Only Weak Sanitization</h5>
+        <p>
+          In this version, the application attempts to block SQL injection by removing <code>--</code> from the input. However, this is easily bypassed using alternative injection techniques.
+        </p>
+        <p><b>Example Exploit:</b></p>
+        <ol>
+          <li>Go to <code>/login_insecure3</code></li>
+          <li>Enter the following credentials:<br>
+            Username: <code>anything</code><br>
+            Password: <code>' OR '1'='1</code>
+            
+          </li>
+          <li>The query becomes:<br>
+            <code>SELECT * FROM User WHERE username = '' OR '1'='1' AND password = 'anything'</code><br>
+            Since <code>'1'='1'</code> is always true, the login succeeds.</li>
+        </ol>
+        <p><b>Why It's Vulnerable:</b> Stripping <code>--</code> is not enough. Other SQLi payloads still work, as input isn't parameterised.</p>
+      </div>
+      
+      <div class="content">
+        <h5>Identifying SQL Injection Vulnerabilities</h5>
+        <p>Common signs of SQLi include:</p>
+        <ul>
+          <li>Application behaviour changes with unscoped inputs <code>%</code></li>
+          <li>Login works with incorrect passwords and injections like <code>' OR '1'='1</code></li>
+          <li>Database errors appear after entering special characters (like <code>'</code>, <code>--</code>, or <code>;</code>)</li>
+        </ul>
+        <p>Security testers often use SQLi payload lists and fuzzing tools like <b>sqlmap</b> to automate discovery.</p>
+      </div>
+    <br>
+</div>
+<br>
+<div class="text-center mt-4">
+  <a href="/intro" class="btn btn-primary">Intro page</a>
+</div>
+<br>
+
+{% endblock %}

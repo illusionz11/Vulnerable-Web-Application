@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}
+Home
+{% endblock %}
+
+{% block content %}
+
+<style>
+ .content { margin-top: 25px;
+ }
+ .textbox {
+        background-color: #1e1e1e;
+        padding: 30px;
+        border-radius: 10px;
+        width: 500px;
+        margin: 0 auto;
+        box-shadow: 0 0 10px rgba(0,0,0,0.7);
+    }
+
+    .textbox label {
+        display: block;
+        margin-top: 20px;
+        font-size: 18px;
+        color: #cccccc;
+    }
+
+    .textbox input[type="text"],
+    .textbox textarea {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        border: 1px solid #555;
+        border-radius: 6px;
+        background-color: #2c2c2c;
+        color: #f0f0f0;
+        box-sizing: border-box;
+    }
+
+    .textbox textarea {
+        height: 150px;
+        resize: vertical;
+    }
+
+    .textbox input[type="submit"] {
+        margin-top: 25px;
+        padding: 12px 20px;
+        font-size: 16px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .textbox input[type="submit"]:hover {
+        background-color: #45a049;
+    }
+
+    .textbox h1 {
+        max-width: 600px;
+        margin: 20px auto;
+        text-align: center;
+        margin-top: 40px;
+        color: #ff6666;
+    }
+
+    .textbox p {
+    font-size: 18px;
+    color: #f0f0f0;
+    background-color: #1e1e1e;
+    padding: 10px;
+    border-radius: 6px;
+    margin: 10px auto;
+    max-width: 90%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    }      
+    
+    .response-box {
+    margin-top: 60px;
+    }
+    
+ text-center mt-4{
+    padding: 10px;
+ }
+
+</style>
+
+<div class="content">
+    <p>
+        As the last page displayed a level 1 XSS vulnerability that was highly insecure this page demonstrates a level 2 XSS reflected vulnerability
+        which is slightly more secure and makes it more difficult for attackers to exploit this vulnerability which may take a more advanced approach from 
+        attackers.
+    </p>
+    <p>
+        This is a level 2 vulnerability as its difference from level 1 to this is the use of 
+        <code>user_input = user_input.replace('&lt;script&gt;', '')</code>, this code makes it so in the form when a user enters
+        the parameters from the last page XSS level 1 '<code>&lt;script&gt;alert('xss')&lt;/script&gt;</code>', this wont work due to the replace function
+        sanitising the form recursively so when a <code>&lt;script&gt;</code> is present it will be replaced with a blank statement meaning the corresponding result
+        will return 'alert('xss')'
+    </p>
+
+    <p>
+        To bypass this the user must change their parameters now as explained the replace function will remove the <code>&lt;script&gt;</code> parameter out of the form 
+        but this is still vulnerable as this replace function is case sensitive meaning the user can modify by using uppercase or a mix of uppercase/lowercase to overcome
+        this. '<code>&lt;ScRiPt&gt;alert('XSS Level 2')&lt;/ScRiPt&gt;</code>' fits this description and works effectively to bypass this level 2 vulnerability.
+        </p>
+    
+
+    <div>
+        <p>
+            So below there will be a HTML Form that is asking the user to enter (something) into the text box as we are looking to test
+            this form to see if we can accomplish a successful XSS attack ther will be some specific commands we will inject this text box
+            with.
+        </p>
+        <p>
+            As explained before the way this testing will be done is a manual test meaning no external or commerical tools outside of this machine will be required 
+            in this purpose, and the method used is called manual fuzzing. this is where you will input multiple payloads manually into the 
+            form and measure the response and handling of these paylaods by the web server. 
+        </p>
+        <p>
+            Therefore you will be using the payload '<code>&lt;ScRiPt&gt;alert('XSS Level 2')&lt;/ScRiPt&gt;</code>' to test this. So copy the given script then enter it into the text box and click submit.
+        </p>        
+        <p>
+            If the payload was successful the web server should have responsded with an alert message at the top of your display saying
+            "(IP):(Port) says XSS Level 2!". If this is true then you have successfully exploited a level 2 Reflected XSS vulnearbility with a sanitsation filter.
+        </p>
+    </div>
+
+    <form method="post" class="textbox">
+        <label for="name">Enter your name:</label>
+        <input type="text" name="name" id="name"><br><br>
+    
+        <label for="message">Enter your message:</label>
+        <textarea name="message" id="message"></textarea><br><br>
+    
+        <input type="submit" value="Submit">
+    </form>
+    
+    {% if name and message %}
+    <div class="textbox response-box">
+        <h1>Your input:</h1>
+        <p><strong>Name:</strong> {{ name | safe }}</p>  <!-- Vulnerable -->
+        <p><strong>Message:</strong> {{ message | safe }}</p>
+    </div>
+    {% endif %}
+</div>
+
+<div class="text-center mt-4">
+  <a href="/XSS-1" class="btn btn-primary">Last Page</a>
+</div>
+<div class="text-center mt-4">
+  <a href="/XSS-3" class="btn btn-primary">Next Page</a>
+</div>
+
+<br>
+{% endblock %}

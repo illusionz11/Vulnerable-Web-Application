@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}
+File Upload
+{% endblock %}
+
+{% block content %}
+
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .content {
+    margin-top: 25px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 20px;
+  }
+
+  .textbox {
+    background-color: #1a1a1a;
+    padding: 30px;
+    border: 2px solid #1f3b4d; /* Slight blue tint to set it apart */
+    border-radius: 12px;
+    width: 600px;
+    margin: 40px auto;
+    box-shadow: 0 0 8px rgba(0, 191, 255, 0.1);
+  }
+
+  .textbox h1,
+  .textbox h5 {
+    text-align: center;
+    color: #00bfff; /* DeepSkyBlue instead of red */
+    margin-top: 10px;
+  }
+
+  .textbox p,
+  .textbox li,
+  .textbox ol {
+    font-size: 17px;
+    color: #e0e0e0;
+    line-height: 1.6;
+  }
+
+  .textbox ul,
+  .textbox ol {
+    padding-left: 25px;
+  }
+
+  .textbox input[type="file"],
+  .textbox input[type="submit"] {
+    display: block;
+    margin-top: 20px;
+    padding: 12px;
+    font-size: 16px;
+    background-color: #2c2c2c;
+    color: #f0f0f0;
+    border: 1px solid #555;
+    border-radius: 6px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .textbox input[type="submit"] {
+    background-color: #007acc;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+
+  .textbox input[type="submit"]:hover {
+    background-color: #005f99;
+  }
+
+  code {
+    background-color: #2c2c2c;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #ffffff;
+  }
+
+  .text-center.mt-4 {
+    text-align: center;
+    margin-top: 40px;
+  }
+
+  .textbox .success-message {
+    color: #7CFC00;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+  }
+  pre {
+  background-color: #2c2c2c;
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+pre code {
+  color: #ffffff;
+  font-size: 15px;
+  display: block;
+  white-space: pre-wrap;
+}
+</style>
+
+ 
+<div class="content">
+  <h5>
+    File Upload 3
+  </h5>
+  <p>
+    As the previous pages demonstrated level 1 and 2 file upload vulnerabilities, this page highlights a level 3 file upload vulnerability that relies on crafting a polyglot file.
+    Instead of exploiting a timing or race condition, an attacker can create a file that is both a valid image and includes embedded Python code.
+    This vulnerability arises when the server, despite its various safeguards, inadvertently executes uploaded content.
+  </p>
+  <p>
+    The upload handler employs several security measures:
+  </p>
+  <ul>
+    <li>
+      <b>Extension and MIME Type Validation:</b> The application checks both the file extension (<code>.png</code>, <code>.jpg</code>, <code>.jpeg</code>) and the actual content type using the <code>magic</code> library, which analyses file headers rather than just trusting the filename.
+    </li>
+    <li>
+      <b>File Size Restriction:</b> Uploads are restricted to a maximum of 1MB per file, preventing larger payloads and minimizing risk.
+    </li>
+    <li>
+      <b>Filename Sanitisation:</b> Uploaded filenames are cleaned using Flask's <code>secure_filename()</code> function from Werkzeug, preventing directory traversal and unsafe characters in paths.
+    </li>
+  </ul>
+  <br>
+  <p>
+    However, if the server later processes or executes the contents of uploaded files (for example, by importing them as Python modules or using subprocess calls),
+    an attacker can exploit this by crafting a <strong>polyglot file</strong>. In a polyglot attack, the file remains a valid image while also containing executable Python code.
+  </p>
+  <br>
+  <ul>
+    <li>
+      <b>Polyglot File Crafting:</b>
+      - An attacker can concatenate an image file with a Python script such that the resultant file appears as a valid image but contains embedded code.
+    </li>
+    <li>
+      <b>Interpreted File Execution:</b>
+      - If the server executes the content of an uploaded file (e.g., via unsafe processing or dynamic module loading), the embedded Python code may be executed, potentially leading to remote code execution.
+    </li>
+  </ul>
+
+  <h2>How to Exploit This Vulnerability</h2>
+    <p>This example demonstrates how to bypass file type validation by <strong>embedding a Python script within a JPEG image file</strong>. Follow the steps below:</p>
+    <ol>
+        <li>Open the <strong>Ubuntu terminal</strong>.</li>
+        
+        <li>Navigate to the directory where both your image (<code>img.jpg</code>) and malicious script (<code>shell1.py</code>) are located. For example:
+            <pre><code>cd ~/Downloads</code></pre>
+        </li>
+        
+        <li>Use the <code>cat</code> command to concatenate the JPEG image and the Python script into a single file:
+            <pre><code>cat 1mg.jpg shell1.py &gt; shell.jpg</code></pre>
+        </li>
+        
+        <li>This creates a new file called <code>payload.jpg</code>. It appears to be a normal image (and may even open in an image viewer), but it <strong>contains embedded Python code</strong>.</li>
+        
+        <li>Upload <code>payload.jpg</code> using the vulnerable file upload form.</li>
+        
+        <li>If the server stores and later executes the contents of uploaded files (e.g., via unsafe handling or custom logic), this may result in <strong>Remote Code Execution (RCE)</strong>, even though the file appears to be an image.</li>
+        
+        <li>To test if the payload executes, attempt to access:
+          <code>http://&lt;target-domain&gt;/view-upload3?file=shell.jpg</code>
+          If successful, this should trigger the embedded Python code (e.g., printing the contents of <code>/etc/passwd</code>), confirming the vulnerability.
+        </li>
+    </ol>
+
+
+    <div class="textbox">
+      <title>Upload new file </title>
+      <h1>Upload a file you want to save</h1>
+      <form action='/file-upload3' method="post" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <input type="submit" value="Upload">
+      </form>
+      <br>
+      {% if file_uploaded %}
+        <p class="success-message">{{ file_uploaded }}</p>
+      {% endif %}
+    </div>
+
+    <div class="text-center mt-4">
+      <a href="/file-upload2" class="btn btn-primary">Last Page</a>
+    </div>
+
+    <div class="text-center mt-4">
+      <a href="/Traversal" class="btn btn-primary">Next vulnerability</a>
+    </div>
+    <br>
+</div>
+{% endblock %}  
